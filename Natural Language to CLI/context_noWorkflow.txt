@@ -1,0 +1,54 @@
+The following CLI modules is available for use:
+- ns-process-data: Process images into a nerfstudio dataset. Scales images to a specified size and calculates the camera poses for each image using COLMAP.
+  usage: ns-process-data [-h]
+                       {images,video,polycam,metashape,realitycapture,record3d}
+  ns-process-data images [-h] --data PATH --output-dir PATH
+                       [--verbose | --no-verbose]
+                       [--camera-type {perspective,fisheye,equirectangular}]
+                       [--matching-method {exhaustive,sequential,vocab_tree}]
+                       [--sfm-tool {any,colmap,hloc}]
+                       [--refine-pixsfm | --no-refine-pixsfm]
+                       [--feature-type 
+{any,sift,superpoint,superpoint_aachen,superpoint_max,superpoint_inloc,r2d2,d2
+net-ss,sosnet,disk}]
+                       [--matcher-type 
+{any,NN,superglue,superglue-fast,NN-superpoint,NN-ratio,NN-mutual,adalam}]
+                       [--num-downscales INT]
+                       [--skip-colmap | --no-skip-colmap]
+                       [--skip-image-processing | --no-skip-image-processing]
+                       [--colmap-model-path PATH] [--colmap-cmd STR]
+                       [--images-per-equirect {8,14}]
+                       [--crop-factor FLOAT FLOAT FLOAT FLOAT]
+                       [--crop-bottom FLOAT] [--gpu | --no-gpu]
+                       [--use-sfm-depth | --no-use-sfm-depth]
+                       [--include-depth-debug | --no-include-depth-debug]
+
+- ns-train: Primary interface for training a NeRF model
+  usage: ns-train {method} [method args] {dataparser} [dataparser args]
+    
+    To learn about the available methods:
+    ns-train --help
+    To learn about a methods parameters:
+
+    ns-train {method} --help
+    By default the nerfstudio dataparser is used. If you would like to use a different dataparser it can be specified after all of the method arguments. For a list of dataparser options:
+    ns-train {method} {dataparser} --help
+
+    methods:
+        - vanilla-nerf: The original NERF implementation. Generally not recommended for most applications.
+        - nerfacto: We created the nerfacto model to act as our default for real data captures of static scenes. The model is not existing published work, but rather a combination of many published methods that we have found work well for real data.
+        - instant-ngp: Many of the main contributions of Instant-NGP are built into our Nerfacto method, so for real-world scenes, we recommend using the Nerfacto model.
+        - in2n: instruct-NeRF2NeRF is a method for editing NeRF scenes with text-instructions. Given a NeRF of a scene and the collection of images used to reconstruct it, the method uses an image-conditioned diffusion model (InstructPix2Pix) to iteratively edit the input images while optimizing the underlying scene, resulting in an optimized 3D scene that respects the edit instruction. The paper demonstrates that their method is able to edit large-scale, real-world scenes, and is able to accomplish more realistic, targeted edits than prior work.
+        - lerf: LERF enables pixel-aligned queries of the distilled 3D CLIP embeddings without relying on region proposals, masks, or fine-tuning, supporting long-tail open-vocabulary queries hierarchically across the volume.
+        - tetra-nerf: The input to Tetra-NeRF is a point cloud which is triangulated to get a set of tetrahedra used to represent the radiance field. Rays are sampled, and the field is queried. The barycentric interpolation is used to interpolate tetrahedra vertices, and the resulting features are passed to a shallow MLP to get the density and colours for volumetric rendering.
+
+- ns-viewer: Load a checkpoint and start the viewer.
+  usage: ns-viewer [-h] --load-config PATH [--viewer.relative-log-filename STR]
+    [--viewer.websocket-port {None}|INT]
+    [--viewer.websocket-port-default INT]
+    [--viewer.websocket-host STR]
+    [--viewer.max-num-display-images INT]
+    [--viewer.quit-on-train-completion | 
+    --viewer.no-quit-on-train-completion]
+                [--viewer.image-format {jpeg,png}]
+                [--viewer.jpeg-quality INT] [--vis {viewer,viewer_beta}]
